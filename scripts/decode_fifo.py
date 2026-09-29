@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: ascii -*-
-"""Decode AMS FIFO messages. Compatible with Python 2.7 and Python 3.
+"""Decode AMS FIFO messages. Compatible with Python 2.6, 2.7 and Python 3.
 
 Usage: python2 decode_fifo.py [irun.log] [-o OUTPUT_DIRECTORY]
 Output defaults to the input log directory. Existing CSV files are preserved.
@@ -12,7 +12,7 @@ how to run: python decode_fifo.py irun.log
 """
 from __future__ import print_function
 
-import argparse
+import optparse
 import errno
 import os
 import re
@@ -63,12 +63,16 @@ def create_output(directory):
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('log_file', nargs='?', default='irun.log')
-    parser.add_argument('-o', '--output-dir', help='Default: input log directory')
-    args = parser.parse_args()
-    log_path = os.path.abspath(args.log_file)
-    directory = os.path.abspath(args.output_dir) if args.output_dir else os.path.dirname(log_path)
+    parser = optparse.OptionParser(
+        usage='%prog [irun.log] [-o OUTPUT_DIRECTORY]', description=__doc__)
+    parser.add_option('-o', '--output-dir', dest='output_dir',
+                      help='Default: input log directory')
+    options, positional = parser.parse_args()
+    if len(positional) > 1:
+        parser.error('at most one log file may be given')
+    log_path = os.path.abspath(positional[0] if positional else 'irun.log')
+    directory = (os.path.abspath(options.output_dir) if options.output_dir
+                 else os.path.dirname(log_path))
     count = 0
     skipped = 0
     try:
