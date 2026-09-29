@@ -27,7 +27,7 @@ NAME_RE = re.compile(r'^fifo_data_(\d+)\.csv$')
 TYPE_NAMES = ['PPG', 'PPGA', 'BGC DAC', 'Reserved',
               'Reserved', 'Reserved', 'Status/Event', 'Test']
 HEADER = ['log_index', 'fifo_data', 'type',
-          'type_name', 'slot', 'ch', 'channel',
+          'type_name', 'slot', 'ch',
           'gain', 'data [21:0]', 'data_signed_22']
 
 
@@ -37,7 +37,7 @@ def decode_word(word, log_index):
     ch = (word >> 25) & 1
     signed = data - 0x400000 if data & 0x200000 else data
     return [log_index, "32'h%08X" % word, type_code,
-            TYPE_NAMES[type_code], (word >> 26) & 7, ch, ch + 1,
+            TYPE_NAMES[type_code], (word >> 26) & 7, ch,
             (word >> 22) & 7, "22'h%06X" % data, signed]
 
 
